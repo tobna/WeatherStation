@@ -2,6 +2,8 @@ import Adafruit_DHT
 import argparse
 from time import time, sleep
 import logging as log
+import mariadb
+import sys
 
 _LAST_READ = time()
 
@@ -23,11 +25,29 @@ if __name__ == '__main__':
                         help="GPIO pin number for data of DHT22 sensor")
     parser.add_argument('--logfile', type=str, default='weather.log', nargs='?', help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
+    parser.add_argument('--force_new_table', type=bool, default=False, const=True, nargs='?',
+                        info="Create a new Table in DB")
     args = parser.parse_args()
     temp_data_pin = args.pin_temp
     logfile = args.logfile
     level_map = {'info': log.INFO, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
     loglevel = level_map[args.loglevel.lower()]
-    log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel, format='%(asctime)s; %(levelname)s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+    log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel,
+                    format='%(asctime)s; %(levelname)s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+    try:
+        conn = mariadb.connect(
+            user="WeatherAgent",
+            password="wetterBbP/W",
+            host="localhost",
+            port=3306,
+            database="Weather"
+        )
+    except mariadb.Error as e:
+        log.error(f"Error connecting to MariaDB: {e}")
+        sys.exit(-1)
+    cur = conn.cursor()
+
+    if args.force_new_table:
+        pass
 
     main(temp_data_pin)
