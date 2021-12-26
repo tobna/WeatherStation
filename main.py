@@ -26,7 +26,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     temp_data_pin = args.pin_temp
     logfile = args.logfile
-    level_map = {'info': log.Info, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
+    level_map = {'info': log.INFO, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
     loglevel = level_map[args.loglevel.lower()]
     log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel, format='%(asctime)s; %(levelname)s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
 
