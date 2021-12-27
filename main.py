@@ -48,7 +48,8 @@ def read_ccs811():
         else:
             print(".", end='')
         sleep(0.5)
-    print("")
+    if not first:
+        print("")
     co2 = ccs811.eco2
     tvoc = ccs811.tvoc
     return tvoc, co2
