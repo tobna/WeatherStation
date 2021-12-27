@@ -2,8 +2,6 @@ import Adafruit_DHT
 import argparse
 from time import time, sleep
 import logging as log
-# import mariadb
-# import MySQLdb as mariadb
 import mysql.connector as mariadb
 import sys
 
@@ -35,14 +33,14 @@ if __name__ == '__main__':
     level_map = {'info': log.INFO, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
     loglevel = level_map[args.loglevel.lower()]
     log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel,
-                    format='%(asctime)s; %(levelname)s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+                    format='%(asctime)s; %(levelname)s: \t%(message)s', datefmt='%d.%m.%Y %H:%M:%S')
     try:
         conn = mariadb.connect(
             user="WeatherAgent",
             password="wetterBbP/W",
-            host="localhost",
-            port=3306,
-            database="Weather"
+            # host="localhost",
+            # port=3306,
+            database="weather"
         )
     except mariadb.Error as e:
         log.error(f"Error connecting to MariaDB: {e}")
