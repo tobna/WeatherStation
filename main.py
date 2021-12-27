@@ -54,7 +54,7 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     if args.dump_table:
-        cur.execute(f"SELECT * IN {_TABLE_NAME}")
+        cur.execute(f"SELECT * FROM {_TABLE_NAME}")
         for row in cur:
             print(row)
 
