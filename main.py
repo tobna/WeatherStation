@@ -11,7 +11,7 @@ _LAST_READ = time()
 _TABLE_NAME = "weather_data"
 
 
-def main(temp_data_pin, db_cursor):
+def main(temp_data_pin, db_cursor, bd_connection):
     global _LAST_READ
     dht22 = Adafruit_DHT.DHT22
     if time()-_LAST_READ < 2:
@@ -24,7 +24,7 @@ def main(temp_data_pin, db_cursor):
     db_cursor.execute(query, (temp, hum))
     if not db_cursor.lastrowid:
         log.warning("last insert id not found")
-    db_cursor.commit()
+    bd_connection.commit()
 
 
 if __name__ == '__main__':
@@ -78,4 +78,4 @@ if __name__ == '__main__':
                 "PRIMARY KEY (id)"
                 ");")
 
-    main(temp_data_pin, cur)
+    main(temp_data_pin, cur, conn)
