@@ -10,7 +10,6 @@ import logging as log
 import mysql.connector as mariadb
 import sys
 
-_LAST_READ = time()
 _TABLE_NAME = "weather_data"
 
 
@@ -25,15 +24,11 @@ def add_to_db(temp, hum, co2, tvoc, db_cursor, bd_connection):
 
 
 def read_dht22(temp_data_pin):
-    global _LAST_READ
     dht22 = Adafruit_DHT.DHT22
-    if time() - _LAST_READ < 2:
-        sleep(2.1)
     log.info("Reading data from DHT22")
     Adafruit_DHT.read_retry(dht22, temp_data_pin)
-    sleep(2.1)
+    sleep(2.5)
     hum, tmp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
-    _LAST_READ = time()
     return tmp, hum
 
 
@@ -42,14 +37,7 @@ def read_ccs811():
     ccs811 = adafruit_ccs811.CCS811(i2c_bus)
     first = True
     while not ccs811.data_ready:
-        if first:
-            print("Waiting for data.", end='')
-            first = False
-        else:
-            print(".", end='')
-        sleep(0.5)
-    if not first:
-        print("")
+        sleep(1)
     co2 = ccs811.eco2
     tvoc = ccs811.tvoc
     return tvoc, co2
