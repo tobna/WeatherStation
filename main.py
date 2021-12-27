@@ -40,8 +40,15 @@ def read_dht22(temp_data_pin):
 def read_ccs811():
     i2c_bus = busio.I2C(board.SCL, board.SDA)
     ccs811 = adafruit_ccs811.CCS811(i2c_bus)
+    first = True
     while not ccs811.data_ready:
-        pass
+        if first:
+            print("Waiting for data.", end='')
+            first = False
+        else:
+            print(".", end='')
+        sleep(0.5)
+    print("")
     co2 = ccs811.eco2
     tvoc = ccs811.tvoc
     return tvoc, co2
