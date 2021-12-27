@@ -55,10 +55,12 @@ if __name__ == '__main__':
 
     if args.dump_table:
         cur.execute(f"SELECT * FROM {_TABLE_NAME}")
-        if len(cur) == 0:
-            print(f"No data in table {_TABLE_NAME}")
+        has_print = False
         for row in cur:
+            has_print = True
             print(row)
+        if not has_print:
+            print(f"No data in table {_TABLE_NAME}")
 
     if args.force_new_table:
         log.warning("Resetting the Database. All data will be lost!")
