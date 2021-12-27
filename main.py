@@ -3,7 +3,8 @@ import argparse
 from time import time, sleep
 import logging as log
 # import mariadb
-import MySQLdb as mariadb
+# import MySQLdb as mariadb
+import mysql.connector as mariadb
 import sys
 
 _LAST_READ = time()
