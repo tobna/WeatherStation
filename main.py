@@ -49,13 +49,13 @@ if __name__ == '__main__':
 
     if args.force_new_table:
         cur.execute("SHOW TABLES;")
-        for row in cur:
-            print(row)
-        cur.execute("CREATE TABLE IF NOT EXISTS weather_data("
-                    "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
-                    "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-                    "temp FLOAT NOT NULL,"
-                    "hum FLOAT NOT NULL"
-                    ")")
+        if 'weather_data' in [row[0] for row in cur]:
+            log.warning("Resetting the Database. All data will be lost!")
+    cur.execute("CREATE TABLE IF NOT EXISTS weather_data("
+                "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
+                "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                "temp FLOAT NOT NULL,"
+                "hum FLOAT NOT NULL"
+                ")")
 
     main(temp_data_pin)
