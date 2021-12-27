@@ -11,20 +11,32 @@ _LAST_READ = time()
 _TABLE_NAME = "weather_data"
 
 
-def main(temp_data_pin, db_cursor, bd_connection):
+def add_to_db(temp, hum, db_cursor, bd_connection):
+    query = f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES(%s,%s)"
+    db_cursor.execute(query, (temp, hum))
+    if db_cursor.lastrowid:
+        log.info(f"Added enrty with id {db_cursor.lastrowid}")
+    else:
+        log.warning("Last insert id not found.")
+    bd_connection.commit()
+
+
+def read_dht22(temp_data_pin):
     global _LAST_READ
     dht22 = Adafruit_DHT.DHT22
-    if time()-_LAST_READ < 2:
+    if time() - _LAST_READ < 2:
         sleep(2.1)
     log.info("Reading data from DHT22")
     hum, temp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
+    return tmp, hum
+
+
+def main(temp_data_pin, db_cursor, bd_connection):
+    tmp, hum = read_dht22(temp_data_pin)
+
     print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
-    query = f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES(%s,%s)"
-    db_cursor.execute(query, (temp, hum))
-    if not db_cursor.lastrowid:
-        log.warning("last insert id not found")
-    bd_connection.commit()
+    add_to_db(tmp, hum, db_cursor, bd_connection)
 
 
 if __name__ == '__main__':
