@@ -43,9 +43,11 @@ def read_ccs811():
     return tvoc, co2
 
 
-def main(temp_data_pin, db_cursor, bd_connection):
+def main(temp_data_pin, db_cursor, bd_connection, p=False):
     tvoc, co2 = read_ccs811()
     tmp, hum = read_dht22(temp_data_pin)
+    if p:
+        print(f"temp={tmp}°C\thum={hum}%\tco2={co2}PPM\ttvoc={tvoc}PPB")
     add_to_db(tmp, hum, co2, tvoc, db_cursor, bd_connection)
 
 
@@ -59,9 +61,14 @@ if __name__ == '__main__':
                         help="Create a new Table in DB")
     parser.add_argument('--dump_table', type=bool, default=False, const=True, nargs='?',
                         help="Dump table data to console on startup")
+    parser.add_argument('-p', '--print', type=bool, default=False, const=True, nargs='?',
+                        help="Print sensor vals to console")
+
     args = parser.parse_args()
+
     temp_data_pin = args.pin_temp
     logfile = args.logfile
+    print_vals = args.print
     level_map = {'info': log.INFO, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
     loglevel = level_map[args.loglevel.lower()]
     log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel,
@@ -102,4 +109,5 @@ if __name__ == '__main__':
                 "PRIMARY KEY (id)"
                 ");")
 
-    main(temp_data_pin, cur, conn)
+    main(temp_data_pin, cur, conn, p=print_vals)
+    conn.close()
