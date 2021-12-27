@@ -35,7 +35,7 @@ def read_dht22(temp_data_pin):
 def main(temp_data_pin, db_cursor, bd_connection):
     tmp, hum = read_dht22(temp_data_pin)
 
-    print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
+    print(f"read temp={tmp:.2f}°C\thum={hum:.2f}%")
     add_to_db(tmp, hum, db_cursor, bd_connection)
 
 
