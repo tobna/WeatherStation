@@ -57,6 +57,7 @@ def once(temp_data_pin, db_cursor, db_connection, p=False):
 
 def main(temp_data_pin, db_cursor, db_connection, p=False):
     once(temp_data_pin, db_cursor, db_connection, p)
+    sleep(20)
     while True:
         now = datetime.now()
         s_to_next_five = max([(now.minute % 5) * 60 - now.second, 0])
