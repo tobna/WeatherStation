@@ -14,11 +14,11 @@ _LAST_READ = time()
 _TABLE_NAME = "weather_data"
 
 
-def add_to_db(temp, hum, db_cursor, bd_connection):
-    query = f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES(%s,%s)"
-    db_cursor.execute(query, (temp, hum))
+def add_to_db(temp, hum, co2, tvoc, db_cursor, bd_connection):
+    query = f"INSERT INTO {_TABLE_NAME} (temp, hum, co2, tvoc) VALUES(%s,%s,%s,%s)"
+    db_cursor.execute(query, (temp, hum, co2, tvoc))
     if db_cursor.lastrowid:
-        log.info(f"Added enrty with id {db_cursor.lastrowid}")
+        log.info(f"Added entry with id {db_cursor.lastrowid}")
     else:
         log.warning("Last insert id not found.")
     bd_connection.commit()
@@ -57,12 +57,8 @@ def read_ccs811():
 
 def main(temp_data_pin, db_cursor, bd_connection):
     tvoc, co2 = read_ccs811()
-    print(f"ccs811: co2={co2:.2f}PPM\ttvoc={tvoc:.2f}PPM")
-
     tmp, hum = read_dht22(temp_data_pin)
-
-    print(f"read temp={tmp:.2f}°C\thum={hum:.2f}%")
-    add_to_db(tmp, hum, db_cursor, bd_connection)
+    add_to_db(tmp, hum, co2, tvoc, db_cursor, bd_connection)
 
 
 if __name__ == '__main__':
@@ -113,6 +109,8 @@ if __name__ == '__main__':
                 "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 "temp FLOAT NOT NULL,"
                 "hum FLOAT NOT NULL,"
+                "co2 INT NOT NULL,"
+                "tvoc INT NOT NULL,"
                 "PRIMARY KEY (id)"
                 ");")
 
