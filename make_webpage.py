@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from matplotlib import pyplot as plt
+from matplotlib import dates
 import mpld3
 import argparse
 import logging as log
@@ -11,8 +12,13 @@ from read_sensors import _TABLE_NAME
 
 def main(cur):
     cur.execute(f"SELECT time, temp, hum FROM {_TABLE_NAME};")
-    for time, temp, hum in cur:
-        print(f"{time} {type(time)}; {temp} {type(temp)}; {hum} {type(hum)}")
+    times, temps, hums = zip(*cur)
+    plt.plot(times, temps)
+    plt.plot(times, hums)
+    plt.title("Weather time series")
+    plt.xlabel("Date")
+    plt.ylabel("T[C]; hum[%]")
+    plt.savefig('testplot.png')
 
 
 if __name__ == '__main__':
