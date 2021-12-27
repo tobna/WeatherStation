@@ -20,7 +20,8 @@ def main(temp_data_pin, db_cursor):
     hum, temp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
     print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
-    db_cursor.execute(f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES ({temp}, {hum});")
+    query = f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES(%s,%s)"
+    db_cursor.execute(query, (temp, hum))
 
 
 if __name__ == '__main__':
