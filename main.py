@@ -16,7 +16,7 @@ def main(temp_data_pin):
     log.info("Reading data from DHT22")
     hum, temp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
-    print(f"read temp={temp}°C\thum={hum}%")
+    print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
 
 
 if __name__ == '__main__':
