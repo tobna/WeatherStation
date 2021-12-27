@@ -5,7 +5,8 @@ import adafruit_ccs811
 import busio
 import board
 import argparse
-from time import time, sleep
+from time import sleep
+from datetime import datetime
 import logging as log
 import mysql.connector as mariadb
 import sys
@@ -13,14 +14,14 @@ import sys
 _TABLE_NAME = "weather_data"
 
 
-def add_to_db(temp, hum, co2, tvoc, db_cursor, bd_connection):
+def add_to_db(temp, hum, co2, tvoc, db_cursor, db_connection):
     query = f"INSERT INTO {_TABLE_NAME} (temp, hum, co2, tvoc) VALUES(%s,%s,%s,%s)"
     db_cursor.execute(query, (temp, hum, co2, tvoc))
     if db_cursor.lastrowid:
         log.info(f"Added entry with id {db_cursor.lastrowid}")
     else:
         log.warning("Last insert id not found.")
-    bd_connection.commit()
+    db_connection.commit()
 
 
 def read_dht22(temp_data_pin):
@@ -33,9 +34,12 @@ def read_dht22(temp_data_pin):
 
 
 def read_ccs811():
-    i2c_bus = busio.I2C(board.SCL, board.SDA)
-    ccs811 = adafruit_ccs811.CCS811(i2c_bus)
-    first = True
+    try:
+        i2c_bus = busio.I2C(board.SCL, board.SDA)
+        ccs811 = adafruit_ccs811.CCS811(i2c_bus)
+    except IOError as err:
+        log.error(f"Got IOError: {e}")
+        exit(-1)
     while not ccs811.data_ready:
         sleep(1)
     co2 = ccs811.eco2
@@ -43,12 +47,22 @@ def read_ccs811():
     return tvoc, co2
 
 
-def main(temp_data_pin, db_cursor, bd_connection, p=False):
+def once(temp_data_pin, db_cursor, db_connection, p=False):
     tvoc, co2 = read_ccs811()
     tmp, hum = read_dht22(temp_data_pin)
     if p:
         print(f"temp={tmp}°C\thum={hum}%\tco2={co2}PPM\ttvoc={tvoc}PPB")
-    add_to_db(tmp, hum, co2, tvoc, db_cursor, bd_connection)
+    add_to_db(tmp, hum, co2, tvoc, db_cursor, db_connection)
+
+
+def main(temp_data_pin, db_cursor, db_connection, p=False):
+    once(temp_data_pin, db_cursor, db_connection, p)
+    while True:
+        now = datetime.now()
+        s_to_next_five = max([(now.minute % 5) * 60 - now.second, 0])
+        sleep(s_to_next_five)
+        once(temp_data_pin, db_cursor, db_connection, False)
+        sleep(60)
 
 
 if __name__ == '__main__':
@@ -63,6 +77,8 @@ if __name__ == '__main__':
                         help="Dump table data to console on startup")
     parser.add_argument('-p', '--print', type=bool, default=False, const=True, nargs='?',
                         help="Print sensor vals to console")
+    parser.add_argument('--continuous', type=bool, default=False, const=True, nargs='?',
+                        help="Check sensors every 5 min and save to DB.")
 
     args = parser.parse_args()
 
@@ -109,5 +125,8 @@ if __name__ == '__main__':
                 "PRIMARY KEY (id)"
                 ");")
 
-    main(temp_data_pin, cur, conn, p=print_vals)
+    if not args.continuous:
+        once(temp_data_pin, cur, conn, p=print_vals)
+    else:
+        main(temp_data_pin, cur, conn, p=print_vals)
     conn.close()
