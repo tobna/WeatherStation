@@ -12,6 +12,17 @@ import mysql.connector as mariadb
 import sys
 
 _TABLE_NAME = "weather_data"
+ccs811 = None
+
+
+def init_sensors():
+    global ccs811
+    try:
+        i2c_bus = busio.I2C(board.SCL, board.SDA)
+        ccs811 = adafruit_ccs811.CCS811(i2c_bus)
+    except IOError as err:
+        log.error(f"Got IOError: {err}")
+        exit(-1)
 
 
 def add_to_db(temp, hum, co2, tvoc, db_cursor, db_connection):
@@ -33,12 +44,8 @@ def read_dht22(temp_data_pin):
 
 
 def read_ccs811():
-    try:
-        i2c_bus = busio.I2C(board.SCL, board.SDA)
-        ccs811 = adafruit_ccs811.CCS811(i2c_bus)
-    except IOError as err:
-        log.error(f"Got IOError: {err}")
-        exit(-1)
+    global ccs811
+    assert ccs811 is not None, f"Need to init sensors first"
     while not ccs811.data_ready:
         sleep(1)
     co2 = ccs811.eco2
@@ -127,6 +134,7 @@ if __name__ == '__main__':
                 "PRIMARY KEY (id)"
                 ");")
 
+    init_sensors()
     if not args.continuous:
         once(temp_data_pin, cur, conn, p=print_vals)
     else:
