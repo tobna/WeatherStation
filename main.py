@@ -20,7 +20,7 @@ def main(temp_data_pin, db_cursor):
     hum, temp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
     print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
-    db_cursor.execute(f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES (%s, %s)", (temp, hum))
+    db_cursor.execute(f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES (%s, %s);", (temp, hum))
 
 
 if __name__ == '__main__':
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     if args.dump_table:
-        cur.execute(f"SELECT * FROM {_TABLE_NAME}")
+        cur.execute(f"SELECT * FROM {_TABLE_NAME};")
         has_print = False
         for row in cur:
             has_print = True
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     if args.force_new_table:
         log.warning("Resetting the Database. All data will be lost!")
-        cur.execute(f"DROP TABLE IF EXISTS {_TABLE_NAME}")
+        cur.execute(f"DROP TABLE IF EXISTS {_TABLE_NAME};")
 
     cur.execute(f"CREATE TABLE IF NOT EXISTS {_TABLE_NAME}("
                 "id INT AUTO_INCREMENT,"
@@ -72,6 +72,6 @@ if __name__ == '__main__':
                 "temp FLOAT NOT NULL,"
                 "hum FLOAT NOT NULL,"
                 "PRIMARY KEY (id)"
-                ")")
+                ");")
 
     main(temp_data_pin, cur)
