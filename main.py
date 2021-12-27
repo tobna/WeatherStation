@@ -55,19 +55,21 @@ if __name__ == '__main__':
 
     if args.dump_table:
         cur.execute(f"SELECT * FROM {_TABLE_NAME}")
+        if len(cur) == 0:
+            print(f"No data in table {_TABLE_NAME}")
         for row in cur:
             print(row)
 
     if args.force_new_table:
-        cur.execute("SHOW TABLES;")
-        if _TABLE_NAME in [row[0] for row in cur]:
-            log.warning("Resetting the Database. All data will be lost!")
+        log.warning("Resetting the Database. All data will be lost!")
+        cur.execute(f"DROP TABLE IF EXISTS {_TABLE_NAME}")
 
     cur.execute(f"CREATE TABLE IF NOT EXISTS {_TABLE_NAME}("
-                "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
+                "id INT AUTO_INCREMENT,"
                 "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 "temp FLOAT NOT NULL,"
-                "hum FLOAT NOT NULL"
+                "hum FLOAT NOT NULL,"
+                "PRIMARY KEY (id)"
                 ")")
 
     main(temp_data_pin, cur)
