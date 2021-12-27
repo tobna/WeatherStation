@@ -49,7 +49,7 @@ def read_ccs811():
 
 def main(temp_data_pin, db_cursor, bd_connection):
     tvoc, co2 = read_ccs811()
-    print(f"ccs811: temp=temp={tmp:.2f}°C\tco2={co2:.2f}PPM\ttvoc={tvoc:.2f}PPM")
+    print(f"ccs811: co2={co2:.2f}PPM\ttvoc={tvoc:.2f}PPM")
 
     tmp, hum = read_dht22(temp_data_pin)
 
