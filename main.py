@@ -22,6 +22,9 @@ def main(temp_data_pin, db_cursor):
     print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
     query = f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES(%s,%s)"
     db_cursor.execute(query, (temp, hum))
+    if not db_cursor.lastrowid:
+        log.warning("last insert id not found")
+    db_cursor.commit()
 
 
 if __name__ == '__main__':
