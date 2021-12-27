@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--logfile', type=str, default='weather.log', nargs='?', help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
     parser.add_argument('--force_new_table', type=bool, default=False, const=True, nargs='?',
-                        info="Create a new Table in DB")
+                        help="Create a new Table in DB")
     args = parser.parse_args()
     temp_data_pin = args.pin_temp
     logfile = args.logfile
