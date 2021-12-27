@@ -70,7 +70,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-pt', '--pin_temp', type=int, default=4, nargs='?',
                         help="GPIO pin number for data of DHT22 sensor")
-    parser.add_argument('--logfile', type=str, default='weather.log', nargs='?', help="Logfile")
+    parser.add_argument('--logfile', type=str, default='/home/pi/WeatherStation/weather.log', nargs='?', help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
     parser.add_argument('--force_new_table', type=bool, default=False, const=True, nargs='?',
                         help="Create a new Table in DB")
