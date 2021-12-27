@@ -27,6 +27,8 @@ def read_dht22(temp_data_pin):
     if time() - _LAST_READ < 2:
         sleep(2.1)
     log.info("Reading data from DHT22")
+    Adafruit_DHT.read_retry(dht22, temp_data_pin)
+    sleep(2.1)
     hum, tmp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
     return tmp, hum
@@ -41,7 +43,7 @@ def main(temp_data_pin, db_cursor, bd_connection):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-pt', '--pin_temp', type=int, default=2, nargs='?',
+    parser.add_argument('-pt', '--pin_temp', type=int, default=4, nargs='?',
                         help="GPIO pin number for data of DHT22 sensor")
     parser.add_argument('--logfile', type=str, default='weather.log', nargs='?', help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
