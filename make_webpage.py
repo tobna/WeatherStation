@@ -10,15 +10,21 @@ import sys
 from read_sensors import _TABLE_NAME
 
 
+_HTML_FOLDER = '/home/pi/WeatherStation/html/'
+
+
 def main(cur):
     cur.execute(f"SELECT time, temp, hum FROM {_TABLE_NAME};")
     times, temps, hums = zip(*cur)
+    fig = plt.figure()
     plt.plot(times, temps)
     plt.plot(times, hums)
     plt.title("Weather time series")
     plt.xlabel("Date")
     plt.ylabel("T[C]; hum[%]")
-    plt.savefig('testplot.png')
+    html_str = mpld3.fig_to_html(fig)
+    with open(_HTML_FOLDER + 'test.html', 'w+') as f:
+        f.write(html_str)
 
 
 if __name__ == '__main__':
