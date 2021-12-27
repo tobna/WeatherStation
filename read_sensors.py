@@ -60,7 +60,7 @@ def main(temp_data_pin, db_cursor, db_connection, p=False):
     log.info("Starting main loop.")
     while True:
         now = datetime.now()
-        s_to_next_five = max([(now.minute % 5) * 60 - now.second, 0])
+        s_to_next_five = (5 - (now.minute % 5)) * 60 - now.second + 60
         sleep(s_to_next_five)
         once(temp_data_pin, db_cursor, db_connection, False)
         sleep(60)
