@@ -26,7 +26,6 @@ def add_to_db(temp, hum, co2, tvoc, db_cursor, db_connection):
 
 def read_dht22(temp_data_pin):
     dht22 = Adafruit_DHT.DHT22
-    log.info("Reading data from DHT22")
     Adafruit_DHT.read_retry(dht22, temp_data_pin)
     sleep(2.5)
     hum, tmp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
@@ -58,6 +57,7 @@ def once(temp_data_pin, db_cursor, db_connection, p=False):
 def main(temp_data_pin, db_cursor, db_connection, p=False):
     once(temp_data_pin, db_cursor, db_connection, p)
     sleep(20)
+    log.info("Starting main loop.")
     while True:
         now = datetime.now()
         s_to_next_five = max([(now.minute % 5) * 60 - now.second, 0])
@@ -90,6 +90,7 @@ if __name__ == '__main__':
     loglevel = level_map[args.loglevel.lower()]
     log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel,
                     format='%(asctime)s; %(levelname)s: \t%(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+    log.info("Initializing DB connection")
     try:
         conn = mariadb.connect(
             user="WeatherAgent",
