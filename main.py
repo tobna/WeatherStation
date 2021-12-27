@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import Adafruit_DHT
 import argparse
 from time import time, sleep
@@ -6,9 +8,10 @@ import mysql.connector as mariadb
 import sys
 
 _LAST_READ = time()
+_TABLE_NAME = "weather_data"
 
 
-def main(temp_data_pin):
+def main(temp_data_pin, db_cursor):
     global _LAST_READ
     dht22 = Adafruit_DHT.DHT22
     if time()-_LAST_READ < 2:
@@ -17,6 +20,7 @@ def main(temp_data_pin):
     hum, temp = Adafruit_DHT.read_retry(dht22, temp_data_pin)
     _LAST_READ = time()
     print(f"read temp={temp:.2f}°C\thum={hum:.2f}%")
+    db_cursor.execute(f"INSERT INTO {_TABLE_NAME} (temp, hum) VALUES (?, ?)", (temp, hum))
 
 
 if __name__ == '__main__':
@@ -27,6 +31,8 @@ if __name__ == '__main__':
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
     parser.add_argument('--force_new_table', type=bool, default=False, const=True, nargs='?',
                         help="Create a new Table in DB")
+    parser.add_argument('--dump_table', type=bool, default=False, const=True, nargs='?',
+                        help="Dump table data to console on startup")
     args = parser.parse_args()
     temp_data_pin = args.pin_temp
     logfile = args.logfile
@@ -47,15 +53,21 @@ if __name__ == '__main__':
         sys.exit(-1)
     cur = conn.cursor()
 
+    if args.dump_table:
+        cur.execute(f"SELECT * IN {_TABLE_NAME}")
+        for row in cur:
+            print(row)
+
     if args.force_new_table:
         cur.execute("SHOW TABLES;")
-        if 'weather_data' in [row[0] for row in cur]:
+        if _TABLE_NAME in [row[0] for row in cur]:
             log.warning("Resetting the Database. All data will be lost!")
-    cur.execute("CREATE TABLE IF NOT EXISTS weather_data("
+
+    cur.execute(f"CREATE TABLE IF NOT EXISTS {_TABLE_NAME}("
                 "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
                 "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 "temp FLOAT NOT NULL,"
                 "hum FLOAT NOT NULL"
                 ")")
 
-    main(temp_data_pin)
+    main(temp_data_pin, cur)
