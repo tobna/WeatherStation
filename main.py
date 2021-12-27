@@ -3,7 +3,7 @@
 import Adafruit_DHT
 import adafruit_ccs811
 import busio
-from board import *
+import board
 import argparse
 from time import time, sleep
 import logging as log
