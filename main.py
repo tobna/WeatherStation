@@ -51,5 +51,11 @@ if __name__ == '__main__':
         cur.execute("SHOW TABLES;")
         for row in cur:
             print(row)
+        cur.execute("CREATE TABLE IF NOT EXISTS weather_data("
+                    "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,"
+                    "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                    "temp FLOAT NOT NULL,"
+                    "hum FLOAT NOT NULL"
+                    ")")
 
     main(temp_data_pin)
