@@ -36,8 +36,8 @@ if __name__ == '__main__':
                     format='%(asctime)s; %(levelname)s: \t%(message)s', datefmt='%d.%m.%Y %H:%M:%S')
     try:
         conn = mariadb.connect(
-            user="pi",
-            # password="wetterBbP/W",
+            user="WeatherAgent",
+            password="wetterDbP/W",
             host="localhost",
             port=3306,
             database="weather"
