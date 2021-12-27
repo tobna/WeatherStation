@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import Adafruit_DHT
+import adafruit_ccs811
+import busio
+import board
 import argparse
 from time import time, sleep
 import logging as log
@@ -34,7 +37,21 @@ def read_dht22(temp_data_pin):
     return tmp, hum
 
 
+def read_ccs811():
+    i2c_bus = busio.I2C(board.SCL, board.SDA)
+    ccs811 = adafruit_ccs811.CCS811(i2c_bus)
+    while not ccs811.data_ready:
+        pass
+    co2 = ccs811.eco2
+    tvoc = ccs811.tvoc
+    tmp = ccs811.temperature
+    return tmp, tvoc, co2
+
+
 def main(temp_data_pin, db_cursor, bd_connection):
+    tmp, tvoc, co2 = read_ccs811()
+    print(f"ccs811: temp=temp={tmp:.2f}°C\tco2={co2:.2f}PPM\ttvoc={tvoc:.2f}PPM")
+
     tmp, hum = read_dht22(temp_data_pin)
 
     print(f"read temp={tmp:.2f}°C\thum={hum:.2f}%")
