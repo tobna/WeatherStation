@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2ab5b462-fdea-4beb-a203-da0e397b8ca8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/make_webpage.py" beforeDir="false" afterPath="$PROJECT_DIR$/make_webpage.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +22,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/read_sensors.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/.gitignore" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/make_webpage.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />

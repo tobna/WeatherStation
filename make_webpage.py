@@ -13,18 +13,22 @@ from read_sensors import _TABLE_NAME
 _HTML_FOLDER = '/home/pi/WeatherStation/html/'
 
 
+def make_plot(dates, data, title, ylabel, filename):
+    fig = plt.figure()
+    plt.plot(dates, data)
+    plt.title(title)
+    plt.xlabel("Date")
+    plt.ylabel(ylabel)
+    html_str = mpld3.fig_to_html(fig)
+    with open(_HTML_FOLDER + filename, 'w+') as f:
+        f.write(html_str)
+
+
 def main(cur):
     cur.execute(f"SELECT time, temp, hum FROM {_TABLE_NAME};")
     times, temps, hums = zip(*cur)
-    fig = plt.figure()
-    plt.plot(times, temps)
-    plt.plot(times, hums)
-    plt.title("Weather time series")
-    plt.xlabel("Date")
-    plt.ylabel("T[C]; hum[%]")
-    html_str = mpld3.fig_to_html(fig)
-    with open(_HTML_FOLDER + 'test.html', 'w+') as f:
-        f.write(html_str)
+    make_plot(times, temps, "Temperature", "Temperature [°C]", "temp.html")
+    make_plot(times, hums, "Humidity", "Humidity [%]", "hum.html")
 
 
 if __name__ == '__main__':
