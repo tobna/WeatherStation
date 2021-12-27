@@ -48,6 +48,8 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     if args.force_new_table:
-        pass
+        cur.execute("SHOW TABLES;")
+        for row in cur:
+            print(row)
 
     main(temp_data_pin)
