@@ -46,20 +46,22 @@ def make_plot(dates, data, title, unit, filename):
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
-def update_plots(cur):
+def update_plots(cur, db_connection):
     log.info("Updating plots ...")
     cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME};")
     times, temps, hums, co2s, tvocs = zip(*cur)
+    db_connection.commit()
     make_plot(times, temps, "Temperature", "°C", "temp.html")
     make_plot(times, hums, "Humidity", "%", "hum.html")
     make_plot(times, co2s, "CO2", "PPM", "co2.html")
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
 
 
-def main(cur):
+def main(cur, db_connection):
     cur.execute(f"SELECT MAX(id) FROM {_TABLE_NAME};")
     for row in cur:
         last_time = row[0]
+    db_connection.commit()
     if not last_time:
         log.error("Last time is still None.")
     log.info(f"Last DB entry is {last_time}")
@@ -72,8 +74,9 @@ def main(cur):
             for row in cur:
                 current = row[0]
                 log.info(f"current is {current}")
+            db_connection.commit()
 
-        update_plots(cur)
+        update_plots(cur, db_connection)
         last_time = current
 
 
@@ -105,10 +108,9 @@ if __name__ == '__main__':
     except mariadb.Error as e:
         log.error(f"Error connecting to MariaDB: {e}")
         sys.exit(-1)
-    conn.autocommit(True)
     cur = conn.cursor()
     if not args.continuous:
-        update_plots(cur)
+        update_plots(cur, conn)
     else:
-        main(cur)
+        main(cur, conn)
     conn.close()
