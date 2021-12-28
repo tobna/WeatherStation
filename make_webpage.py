@@ -57,20 +57,21 @@ def update_plots(cur):
 
 
 def main(cur):
-    cur.execute(f"SELECT MAX(time) FROM {_TABLE_NAME};")
+    cur.execute(f"SELECT MAX(id) FROM {_TABLE_NAME};")
     for row in cur:
         last_time = row[0]
     if not last_time:
         log.error("Last time is still None.")
-    log.info(f"Last DB entry is from {last_time:%d.%m.%Y %H:%M:%S}")
+    log.info(f"Last DB entry is {last_time}")
     while True:
         # wait for new measurement
         current = last_time
         while last_time == current:
             sleep(60)
-            cur.execute(f"SELECT MAX(time) FROM {_TABLE_NAME};")
+            cur.execute(f"SELECT MAX(id) FROM {_TABLE_NAME};")
             for row in cur:
                 current = row[0]
+                log.info(f"current is {current}")
 
         update_plots(cur)
         last_time = current
