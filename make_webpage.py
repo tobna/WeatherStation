@@ -57,7 +57,7 @@ def update_plots(cur):
 
 
 def main(cur):
-    cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME}")
+    cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME};")
     for row in cur:
         last_time = row[0]
     if not last_time:
@@ -68,7 +68,7 @@ def main(cur):
         current = last_time
         while last_time == current:
             sleep(60)
-            cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME}")
+            cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME};")
             for row in cur:
                 current = row[0]
 
