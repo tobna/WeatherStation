@@ -149,7 +149,7 @@ def main(cur, db_connection):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--logfile', type=str, default='/home/pi/WeatherStation/weather_website.log', nargs='?',
+    parser.add_argument('--logfile', type=str, default='/var/www/weather/weather_website.log', nargs='?',
                         help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
     parser.add_argument('--continuous', type=bool, default=False, const=True, nargs='?',
