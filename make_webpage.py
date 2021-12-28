@@ -7,6 +7,7 @@ import sys
 from read_sensors import _TABLE_NAME
 from math import ceil, floor
 import plotly.express as px
+import plotly.graph_objects as go
 from pandas import DataFrame
 from time import sleep
 
@@ -20,6 +21,23 @@ def up_to(x, base):
 
 
 _HTML_FOLDER = '/home/pi/WeatherStation/html/'
+
+
+def make_temp_gauge(temp, filename, min_data=0, max_data=30):
+    fig = go.Figure(go.Indicator(
+        domain={'x': [0, 1], 'y': [0, 1]},
+        value=temp,
+        number={'valueformat': ".1f", 'suffix': "°C"},
+        title={"text": "Temperature", 'font': {'size': 24}},
+        mode="gauge+number",
+        gauge={'axis': {'range': [min_data, max_data], 'tickformat': ".1f", 'ticksuffix': "°C"},
+               'steps': [{'range': [-30, 10], 'color': 'blue'}, {'range': [10, 18], 'color': 'lightblue'},
+                         {'range': [18, 23], 'color': 'green'}, {'range': [23, 27], 'color': 'orange'},
+                         {'range': [27, 60], 'color': 'red'}],
+               'bar': {'color': 'dimgrey'}}
+    ))
+    fig.update_layout(template='plotly_dark')
+    fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
 def make_plot(dates, data, title, unit, filename):
@@ -48,13 +66,14 @@ def make_plot(dates, data, title, unit, filename):
 
 def update_plots(cur, db_connection):
     log.info("Updating plots ...")
-    cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME};")
+    cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME} ORDER BY time ASC;")
     times, temps, hums, co2s, tvocs = zip(*cur)
     db_connection.commit()
     make_plot(times, temps, "Temperature", "°C", "temp.html")
     make_plot(times, hums, "Humidity", "%", "hum.html")
     make_plot(times, co2s, "CO2", "PPM", "co2.html")
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
+    make_temp_gauge(temps[-1], _HTML_FOLDER + 'temp_gauge.html', min(temps + [0]), max(temps + [25]))
 
 
 def main(cur, db_connection):
