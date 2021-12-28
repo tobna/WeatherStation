@@ -102,7 +102,7 @@ if __name__ == '__main__':
         conn = mariadb.connect(
             user="WeatherAgent",
             password="wetterDbP/W",
-            host="localhost",
+            host="raspberrypi",
             port=3306,
             database="weather"
         )
