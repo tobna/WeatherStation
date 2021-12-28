@@ -105,6 +105,7 @@ if __name__ == '__main__':
     except mariadb.Error as e:
         log.error(f"Error connecting to MariaDB: {e}")
         sys.exit(-1)
+    conn.autocommit(True)
     cur = conn.cursor()
     if not args.continuous:
         update_plots(cur)
