@@ -8,6 +8,7 @@ from read_sensors import _TABLE_NAME
 from math import ceil, floor
 import plotly.express as px
 from pandas import DataFrame
+from time import sleep
 
 
 def down_to(x, base):
@@ -45,10 +46,9 @@ def make_plot(dates, data, title, unit, filename):
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
-def main(cur):
+def update_plots(cur):
+    log.info("Updating plots ...")
     cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME};")
-    """cur = [(datetime(2021, 12, 27, 17, 0, 0, 0), 21.4, 41.5), (datetime(2021, 12, 27, 18, 0, 0, 0), 19.8, 43.),
-           (datetime(2021, 12, 27, 21, 0, 0, 0), 17.9, 42.), (datetime(2021, 12, 28, 1, 0, 0, 0), 18.7, 44.)]"""
     times, temps, hums, co2s, tvocs = zip(*cur)
     make_plot(times, temps, "Temperature", "°C", "temp.html")
     make_plot(times, hums, "Humidity", "%", "hum.html")
@@ -56,13 +56,33 @@ def main(cur):
     make_plot(times, tvocs, "TVOC", "PPB", "hum.html")
 
 
+def main(cur):
+    cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME}")
+    for row in cur:
+        last_time = row[0]
+    if not last_time:
+        log.error("Last time is still None.")
+    log.info(f"Last DB entry is from {last_time:%d.%m.%Y %H:%M:%S}")
+    while True:
+        # wait for new measurement
+        current = last_time
+        while last_time == current:
+            sleep(60)
+            cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME}")
+            for row in cur:
+                current = row[0]
+
+        update_plots(cur)
+        last_time = current
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-pt', '--pin_temp', type=int, default=4, nargs='?',
-                        help="GPIO pin number for data of DHT22 sensor")
     parser.add_argument('--logfile', type=str, default='/home/pi/WeatherStation/weather_website.log', nargs='?',
                         help="Logfile")
     parser.add_argument('--loglevel', type=str, default='info', nargs='?', help="Loglevel")
+    parser.add_argument('--continuous', type=bool, default=False, const=True, nargs='?',
+                        help="Check sensors every 5 min and save to DB.")
 
     args = parser.parse_args()
 
@@ -85,5 +105,8 @@ if __name__ == '__main__':
         log.error(f"Error connecting to MariaDB: {e}")
         sys.exit(-1)
     cur = conn.cursor()
-    main(cur)
+    if not args.continuous:
+        update_plots(cur)
+    else:
+        main(cur)
     conn.close()
