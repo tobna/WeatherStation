@@ -46,12 +46,14 @@ def make_plot(dates, data, title, unit, filename):
 
 
 def main(cur):
-    cur.execute(f"SELECT time, temp, hum FROM {_TABLE_NAME};")
+    cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME};")
     """cur = [(datetime(2021, 12, 27, 17, 0, 0, 0), 21.4, 41.5), (datetime(2021, 12, 27, 18, 0, 0, 0), 19.8, 43.),
            (datetime(2021, 12, 27, 21, 0, 0, 0), 17.9, 42.), (datetime(2021, 12, 28, 1, 0, 0, 0), 18.7, 44.)]"""
-    times, temps, hums = zip(*cur)
+    times, temps, hums, co2s, tvocs = zip(*cur)
     make_plot(times, temps, "Temperature", "°C", "temp.html")
     make_plot(times, hums, "Humidity", "%", "hum.html")
+    make_plot(times, co2s, "CO2", "PPM", "hum.html")
+    make_plot(times, tvocs, "TVOC", "PPB", "hum.html")
 
 
 if __name__ == '__main__':
