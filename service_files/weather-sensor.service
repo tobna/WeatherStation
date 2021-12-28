@@ -1,0 +1,15 @@
+[Unit]
+Description=Probes weather sensors every 5 minutes & sends data to database
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/home/pi/WeatherStation/
+ExecStart=/usr/bin/python3 /home/pi/WeatherStation/read_sensors.py --continuous
+Restart=always
+SyslogIdentifier=weather-sensor
+Type=idle
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+

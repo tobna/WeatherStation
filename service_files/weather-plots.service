@@ -1,0 +1,15 @@
+[Unit]
+Description=Updates html plots on new data
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/var/www/weather/
+ExecStart=/usr/bin/python3 /var/www/weather/make_webpage.py --continuous
+Restart=always
+SyslogIdentifier=weather-plots
+Type=idle
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+
