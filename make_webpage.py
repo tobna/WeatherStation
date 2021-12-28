@@ -73,7 +73,7 @@ def update_plots(cur, db_connection):
     make_plot(times, hums, "Humidity", "%", "hum.html")
     make_plot(times, co2s, "CO2", "PPM", "co2.html")
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
-    make_temp_gauge(temps[-1], _HTML_FOLDER + 'temp_gauge.html', min(temps + [0]), max(temps + [25]))
+    make_temp_gauge(temps[-1], _HTML_FOLDER + 'temp_gauge.html', min(temps, 0), max(temps, 25))
 
 
 def main(cur, db_connection):
