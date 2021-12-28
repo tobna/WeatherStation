@@ -93,6 +93,22 @@ def make_plot(dates, data, title, unit, filename):
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
+def make_tvoc_gauge(tvoc, filename, min_data=0, max_data=1500):
+    fig = go.Figure(go.Indicator(
+        domain={'x': [0, 1], 'y': [0, 1]},
+        value=tvoc,
+        number={'suffix': "PPB"},
+        title={"text": "CO2 concentration", 'font': {'size': 24}},
+        mode="gauge+number",
+        gauge={'axis': {'range': [min_data, max_data], 'ticksuffix': "PPB"},
+               'steps': [{'range': [0, 400], 'color': 'green'}, {'range': [400, 1300], 'color': 'orange'},
+                         {'range': [1300, 8000], 'color': 'red'}],
+               'bar': {'color': 'dimgrey'}}
+    ))
+    fig.update_layout(template='plotly_dark')
+    fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
+
+
 def update_plots(cur, db_connection):
     log.info("Updating plots ...")
     cur.execute(f"SELECT time, temp, hum, co2, tvoc FROM {_TABLE_NAME} ORDER BY time ASC;")
@@ -102,9 +118,10 @@ def update_plots(cur, db_connection):
     make_plot(times, hums, "Humidity", "%", "hum.html")
     make_plot(times, co2s, "CO2", "PPM", "co2.html")
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
-    make_temp_gauge(temps[-1], 'temp_gauge.html', min(min(temps), 0), max(max(temps), 25))
+    make_temp_gauge(temps[-1], 'temp_gauge.html', min(int(1.1 * min(temps)), 0), int(1.1 * max(temps)))
     make_hum_gauge(hums[-1], "hum_gauge.html")
-    make_co2_gauge(co2s[-1], "co2_gauge.html", max_data=max(max(co2s), 3000))
+    make_co2_gauge(co2s[-1], "co2_gauge.html", max_data=ceil(1.1 * max(co2s)))
+    make_tvoc_gauge(tvocs[-1], "tvoc_gauge.html", max_data=ceil(1.1 * max(tvocs)))
 
 
 def main(cur, db_connection):
