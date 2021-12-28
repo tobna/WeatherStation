@@ -68,7 +68,7 @@ def main(cur):
         current = last_time
         while last_time == current:
             sleep(60)
-            cur.execute(f"SECLECT MAX(time) FROM {_TABLE_NAME};")
+            cur.execute(f"SELECT MAX(time) FROM {_TABLE_NAME};")
             for row in cur:
                 current = row[0]
 
