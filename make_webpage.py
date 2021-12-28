@@ -98,7 +98,7 @@ def make_tvoc_gauge(tvoc, filename, min_data=0, max_data=1500):
         domain={'x': [0, 1], 'y': [0, 1]},
         value=tvoc,
         number={'suffix': "PPB"},
-        title={"text": "CO2 concentration", 'font': {'size': 24}},
+        title={"text": "Total Volatile Organic Compounds (TVOC)", 'font': {'size': 24}},
         mode="gauge+number",
         gauge={'axis': {'range': [min_data, max_data], 'ticksuffix': "PPB"},
                'steps': [{'range': [0, 400], 'color': 'green'}, {'range': [400, 1300], 'color': 'orange'},
