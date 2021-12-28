@@ -162,7 +162,7 @@ if __name__ == '__main__':
     logfile = args.logfile
     level_map = {'info': log.INFO, 'debug': log.DEBUG, 'warning': log.WARNING, 'error': log.ERROR}
     loglevel = level_map[args.loglevel.lower()]
-    log.basicConfig(filename=logfile, encoding='utf-8', level=loglevel,
+    log.basicConfig(filename=logfile, level=loglevel,
                     format='%(asctime)s; %(levelname)s: \t%(message)s', datefmt='%d.%m.%Y %H:%M:%S')
 
     log.info("Initializing DB connection")
