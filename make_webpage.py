@@ -115,9 +115,9 @@ def main(cur, db_connection):
     if not last_time:
         log.error("Last time is still None.")
     log.info(f"Last DB entry is {last_time}")
+    current = last_time
     while True:
         # wait for new measurement
-        current = last_time
         while last_time == current:
             sleep(60)
             cur.execute(f"SELECT MAX(id) FROM {_TABLE_NAME};")
