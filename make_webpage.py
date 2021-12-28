@@ -20,7 +20,7 @@ def up_to(x, base):
     return base * ceil(x / base)
 
 
-_HTML_FOLDER = '/var/www/html/html/'
+_HTML_FOLDER = '/var/www/weather/html/'
 
 
 def make_temp_gauge(temp, filename, min_data=0, max_data=30):
