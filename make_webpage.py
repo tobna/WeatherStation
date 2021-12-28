@@ -20,29 +20,11 @@ def make_plot(dates, data, title, unit, filename):
     plt.xlabel("Date")
     plt.ylabel(f"{title} [{unit}]")
 
-    annot = plt.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
-                         bbox=dict(boxstyle="round", fc="w"), arrowprops=dict(arrowstyle="->"))
-    annot.set_visible(False)
+    def on_mouse_move(event):
+        plt.vlines = []
+        plt.axvline(x=event.xdata, color='k')
 
-    def hover(event):
-        vis = annot.get_visible()
-        cont, ind = l.contains(event)
-        idx = ind['ind'][0]
-        if cont:
-            posx, posy = [l.get_xdata()[idx], l.get_ydata()[idx]]
-            annot.xy = (posx, posy)
-            text = f'{l.get_label()}: {posx:.2f}-{posy:.2f}'
-            annot.set_text(text)
-            # annot.get_bbox_patch().set_facecolor(cmap(norm(c[ind["ind"][0]])))
-            annot.get_bbox_patch().set_alpha(0.4)
-            annot.set_visible(True)
-            fig.canvas.draw_idle()
-        else:
-            if vis:
-                annot.set_visible(False)
-                fig.canvas.draw_idle()
-    fig.canvas.mpl_connect("motion_notify_event", hover)
-
+    fig.canvas.mpl_connect('motion_notify_event', on_mouse_move)
     html_str = mpld3.fig_to_html(fig)
     with open(_HTML_FOLDER + filename, 'w+') as f:
         f.write(html_str)
