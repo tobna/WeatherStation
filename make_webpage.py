@@ -53,6 +53,22 @@ def make_hum_gauge(hum, filename):
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
+def make_co2_gauge(co2, filename, min_data=0, max_data=3000):
+    fig = go.Figure(go.Indicator(
+        domain={'x': [0, 1], 'y': [0, 1]},
+        value=co2,
+        number={'suffix': "PPM"},
+        title={"text": "CO2 concentration", 'font': {'size': 24}},
+        mode="gauge+number",
+        gauge={'axis': {'range': [min_data, max_data], 'ticksuffix': "PPM"},
+               'steps': [{'range': [0, 1000], 'color': 'green'}, {'range': [1000, 2000], 'color': 'orange'},
+                         {'range': [2000, 8000], 'color': 'red'}],
+               'bar': {'color': 'dimgrey'}}
+    ))
+    fig.update_layout(template='plotly_dark')
+    fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
+
+
 def make_plot(dates, data, title, unit, filename):
     df = DataFrame(data=[dates, data]).transpose()
     df.columns = ['Date', title]
@@ -88,6 +104,7 @@ def update_plots(cur, db_connection):
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
     make_temp_gauge(temps[-1], 'temp_gauge.html', min(min(temps), 0), max(max(temps), 25))
     make_hum_gauge(hums[-1], "hum_gauge.html")
+    make_co2_gauge(co2s[-1], "co2_gauge.html", max_data=max(max(co2s), 3000))
 
 
 def main(cur, db_connection):
