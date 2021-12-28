@@ -4,12 +4,14 @@ import argparse
 import logging as log
 import mysql.connector as mariadb
 import sys
-from read_sensors import _TABLE_NAME
 from math import ceil, floor
 import plotly.express as px
 import plotly.graph_objects as go
 from pandas import DataFrame
 from time import sleep
+
+
+_TABLE_NAME = "weather_data"
 
 
 def down_to(x, base):
