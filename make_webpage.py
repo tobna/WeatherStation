@@ -52,8 +52,8 @@ def update_plots(cur):
     times, temps, hums, co2s, tvocs = zip(*cur)
     make_plot(times, temps, "Temperature", "°C", "temp.html")
     make_plot(times, hums, "Humidity", "%", "hum.html")
-    make_plot(times, co2s, "CO2", "PPM", "hum.html")
-    make_plot(times, tvocs, "TVOC", "PPB", "hum.html")
+    make_plot(times, co2s, "CO2", "PPM", "co2.html")
+    make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
 
 
 def main(cur):
