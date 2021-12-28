@@ -40,6 +40,19 @@ def make_temp_gauge(temp, filename, min_data=0, max_data=30):
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
+def make_hum_gauge(hum, filename):
+    fig = go.Figure(go.Pie(
+        values=[hum, 100-hum],
+        hole=.6,
+        marker={'colors': ['darkblue', 'lightblue']}
+    ))
+    fig.update_layout(template='plotly_dark', annotations=[{'text': f"{hum}%", 'showarrow': False, 'font_size': 24}],
+                      title={"text": "Humidity", 'font': {'size': 24}, 'yanchor': 'top'},
+                      showlegend=False)
+    fig.update_traces(hoverinfo='percent', textinfo='none')
+    fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
+
+
 def make_plot(dates, data, title, unit, filename):
     df = DataFrame(data=[dates, data]).transpose()
     df.columns = ['Date', title]
@@ -74,6 +87,7 @@ def update_plots(cur, db_connection):
     make_plot(times, co2s, "CO2", "PPM", "co2.html")
     make_plot(times, tvocs, "TVOC", "PPB", "tvoc.html")
     make_temp_gauge(temps[-1], 'temp_gauge.html', min(min(temps), 0), max(max(temps), 25))
+    make_hum_gauge(hums[-1], "hum_gauge.html")
 
 
 def main(cur, db_connection):
