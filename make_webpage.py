@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import logging as log
 import mysql.connector as mariadb
 import sys
@@ -92,6 +94,7 @@ def make_plot(dates, data, title, unit, filename):
                                       {"dtickrange": ["M1", "M12"], "value": "%m.%Y"},
                                       {"dtickrange": ["M12", None], "value": "%Y"}])
     fig.update_yaxes(range=[down_to(min(data), 5), up_to(max(data), 5)])
+    fig.update_xaxes(range=[datetime.today() - relativedelta(days=1), datetime.today()])
     fig.write_html(_HTML_FOLDER + filename, config={"displayModeBar": False, "showTips": False})
 
 
