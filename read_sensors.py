@@ -57,9 +57,12 @@ def read_ccs811():
     return tvoc, co2
 
 
-def read_mh_z19():
+def read_mh_z19(p=False):
     global last_mhz19_read
     if time() - last_mhz19_read < 61:
+        if p:
+            print(f"mh-z19: sleep for {time() - last_mhz19_read}s")
+        log.info(f"mh-z19: sleep for {time() - last_mhz19_read}s")
         sleep(time() - last_mhz19_read + 1)
     vals = mh_z19.read_all()
     last_mhz19_read = time()
@@ -72,7 +75,7 @@ def once(temp_data_pin, db_cursor, db_connection, p=False):
     tvoc, co2 = read_ccs811()
     tmp, hum = read_dht22(temp_data_pin)
     try:
-        accurate_co2 = read_mh_z19()
+        accurate_co2 = read_mh_z19(p)
     except SerialException as e:
         log.error(f"SerialException: {e}")
         accurate_co2 = None
