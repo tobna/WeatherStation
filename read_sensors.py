@@ -68,6 +68,7 @@ def read_mh_z19(p=False):
     last_mhz19_read = time()
     if 'co2' in vals:
         return vals['co2']
+    log.warning(f"co2 value in mh-z19 readout: {vals}")
     return None
 
 
