@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 
 import Adafruit_DHT
+import mh_z19
 import adafruit_ccs811
 import busio
 import board
 import argparse
-from time import sleep
+from time import sleep, time
 from datetime import datetime
 import logging as log
 import mysql.connector as mariadb
 import sys
 
+from serial.serialutil import SerialException
+
 _TABLE_NAME = "weather_data"
 ccs811 = None
+last_mhz19_read = time()
 
 
 def init_sensors():
@@ -53,11 +57,29 @@ def read_ccs811():
     return tvoc, co2
 
 
+def read_mh_z19():
+    global last_mhz19_read
+    if time() - last_mhz19_read < 61:
+        sleep(time() - last_mhz19_read + 1)
+    vals = mh_z19.read_all()
+    last_mhz19_read = time()
+    if 'co2' in vals:
+        return vals['co2']
+    return None
+
+
 def once(temp_data_pin, db_cursor, db_connection, p=False):
     tvoc, co2 = read_ccs811()
     tmp, hum = read_dht22(temp_data_pin)
+    try:
+        accurate_co2 = read_mh_z19()
+    except SerialException as e:
+        log.error(f"SerialException: {e}")
+        accurate_co2 = None
+    if accurate_co2:
+        co2 = accurate_co2
     if p:
-        print(f"temp={tmp}°C\thum={hum}%\tco2={co2}PPM\ttvoc={tvoc}PPB")
+        print(f"temp={tmp}°C\thum={hum}%\tco2={co2}PPM{' mh-z19' if accurate_co2 else ''}\ttvoc={tvoc}PPB")
     add_to_db(tmp, hum, co2, tvoc, db_cursor, db_connection)
 
 
